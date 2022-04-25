@@ -25,6 +25,10 @@ class Actor_NN(nn.Module):
 
         return x
 
+    def weights(self,layer):
+        if isinstance(layer, nn.Linear):
+            nn.init.xavier_normal_(layer.weight)
+
 
     def freeze_params(self):
 
@@ -37,6 +41,10 @@ class Actor_NN(nn.Module):
         loss = torch.mean(loss)
         self.optimiser.zero_grad()
         loss.backward()
+
+        for p in self.parameters():
+            p.grad.data.clamp_(-1,1)
+
         self.optimiser.step()
 
     def copy_weights(self, estimate):
@@ -50,4 +58,4 @@ class Actor_NN(nn.Module):
 
             # do polyak averaging to update target NN weights
             for t_param, e_param in zip(self.parameters(),estimate.parameters()):
-                t_param.data.copy_(t_param.data * decay + (1 - decay) * e_param.data)
+                t_param.data.copy_(e_param.data * decay + (1 - decay) * t_param.data)

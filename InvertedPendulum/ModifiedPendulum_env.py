@@ -1,6 +1,8 @@
 import gym
 import numpy as np
 
+# Ensure pendulum always starts in the same position
+
 class ModifiedInvPendulum(gym.Wrapper):
 
     def __init__(self,env):
